@@ -109,9 +109,10 @@ namespace RKHReader
             {
                 ImageOffset = ByteOperations.ReadUInt32(Binary, HeaderOffset + 0X00);
             }
-            else if (ByteOperations.ReadUInt32(Binary, ImageOffset + 0x04) > 0x03)
+            else if (ByteOperations.ReadUInt32(Binary, ImageOffset + 0x04) > 0x03 && ByteOperations.ReadUInt32(Binary, ImageOffset + 0x04) != 5)
             {
-                ImageOffset += 0xA8;
+                ImageOffset += 0x28;
+                ImageOffset += 0x80;
             }
             else if (HeaderType == QualcommPartitionHeaderType.Short)
             {
@@ -139,7 +140,7 @@ namespace RKHReader
             }
             CertificatesSize = ByteOperations.ReadUInt32(Binary, HeaderOffset + 0X1C);
             //CertificatesOffset = CertificatesAddress - ImageAddress + ImageOffset;
-            CertificatesOffset =  ImageSize - CertificatesSize + ImageOffset;
+            CertificatesOffset = ImageSize - CertificatesSize + ImageOffset;
 
             uint CurrentCertificateOffset = CertificatesOffset;
             uint CertificateSize = 0;
