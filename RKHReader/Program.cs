@@ -14,14 +14,14 @@ namespace RKHReader
 
             if (File.Exists(args[0]))
             {
-                PrintRKHFromFile(args[0]);
+                PrintRKHFromFile3(args[0]);
             }
 
             if (Directory.Exists(args[0]))
             {
                 foreach (var el in Directory.EnumerateFiles(args[0], "*.*", SearchOption.AllDirectories))
                 {
-                    PrintRKHFromFile(el);
+                    PrintRKHFromFile3(el);
                 }
             }
         }
@@ -49,7 +49,8 @@ namespace RKHReader
                     bool IsCertificatePartOfExistingChain = LastOffset == 0 || LastOffset == i;
                     if (!IsCertificatePartOfExistingChain)
                     {
-                        break;
+                        Debug.WriteLine("Chain broke right here: " + Signatures.Count);
+                        //break;
                     }
 
                     LastOffset = i + (uint)CertificateSize;
@@ -65,18 +66,20 @@ namespace RKHReader
 
             for (int i = 0; i < Signatures.Count; i++)
             {
-                byte[] Hash = new SHA256Managed().ComputeHash(Signatures[i]);
+                byte[] Hash = new SHA384Managed().ComputeHash(Signatures[i]);
 
                 // The last certificate in the chain is the Root Key Hash.
                 if (i + 1 == Signatures.Count)
                 {
                     Debug.WriteLine("RKH: " + Converter.ConvertHexToString(Hash, ""));
+                    //File.WriteAllBytes(i + ".cer", Signatures[i]);
                     RKH = Hash;
                 }
                 else
                 {
 #if DEBUG
                     Debug.WriteLine("Cert: " + Converter.ConvertHexToString(Hash, ""));
+                    //File.WriteAllBytes(i + ".cer", Signatures[i]);
 #endif
                 }
             }
